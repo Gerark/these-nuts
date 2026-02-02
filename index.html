@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TheseNuts — Thread Working Diameters</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { boxShadow: { soft: "0 10px 30px rgba(0,0,0,.12)" } } }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-950 to-slate-900 text-slate-100">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <!-- Top bar -->
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 shadow-soft grid place-items-center">
+          <span class="text-lg">🥜</span>
+        </div>
+        <div>
+          <h1 class="text-xl sm:text-2xl font-semibold tracking-tight">TheseNuts</h1>
+          <div class="text-xs text-slate-400 -mt-0.5">Diametri di lavorazione + tolleranze (placeholder)</div>
+        </div>
+      </div>
+      <div class="hidden sm:flex items-center gap-2 text-[11px] text-slate-300">
+        <span class="px-2.5 py-1.5 rounded-xl bg-slate-900/60 border border-slate-800">ISO</span>
+        <span class="px-2.5 py-1.5 rounded-xl bg-slate-900/60 border border-slate-800">GAS</span>
+        <span class="px-2.5 py-1.5 rounded-xl bg-slate-900/60 border border-slate-800">UNC</span>
+        <span class="px-2.5 py-1.5 rounded-xl bg-slate-900/60 border border-slate-800">UNF</span>
+        <span class="px-2.5 py-1.5 rounded-xl bg-slate-900/60 border border-slate-800">NPT</span>
+      </div>
+    </div>
+
+    <div class="mt-5 grid grid-cols-1 lg:grid-cols-5 gap-4">
+      <!-- INPUTS -->
+      <div class="lg:col-span-3 rounded-3xl bg-slate-900/55 border border-slate-800 shadow-soft p-4 sm:p-5">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-semibold">Input</div>
+          <span id="modeBadge" class="text-[11px] px-2.5 py-1 rounded-full bg-slate-950/50 border border-slate-800 text-slate-300">Standard</span>
+        </div>
+
+        <!-- Compact row: kind + norm -->
+        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-slate-950/45 border border-slate-800 p-3">
+            <div class="text-[11px] text-slate-400">Tipo</div>
+            <div class="mt-2 inline-flex rounded-2xl bg-slate-950/60 border border-slate-800 p-1">
+              <button data-kind="external" class="kindBtn px-3 py-1.5 text-sm rounded-xl bg-indigo-500/20 border border-indigo-400/30 text-slate-100">Vite</button>
+              <button data-kind="internal" class="kindBtn px-3 py-1.5 text-sm rounded-xl text-slate-300 hover:text-slate-100">Madrevite</button>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-slate-950/45 border border-slate-800 p-3">
+            <div class="text-[11px] text-slate-400">Normativa</div>
+            <select id="normSelect" class="mt-2 w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 outline-none focus:ring-2 focus:ring-cyan-400/30">
+              <option value="ISO_METRIC">ISO (Metrico)</option>
+              <option value="GAS">GAS (BSP)</option>
+              <option value="UNC">UNC</option>
+              <option value="UNF">UNF</option>
+              <option value="NPT">NPT (Conico)</option>
+            </select>
+            <div id="normHint" class="mt-1 text-[11px] text-slate-400">mm • passo P</div>
+          </div>
+        </div>
+
+        <!-- Mode -->
+        <div class="mt-3 rounded-2xl bg-slate-950/45 border border-slate-800 p-3 flex items-center justify-between gap-3">
+          <div class="inline-flex rounded-2xl bg-slate-950/60 border border-slate-800 p-1">
+            <button id="modeStandard" class="modeBtn px-3 py-1.5 text-sm rounded-xl bg-cyan-500/15 border border-cyan-400/25 text-slate-100">Standard</button>
+            <button id="modeNonStandard" class="modeBtn px-3 py-1.5 text-sm rounded-xl text-slate-300 hover:text-slate-100">Non standard</button>
+          </div>
+          <div class="text-[11px] text-amber-200 px-2 py-1 rounded-xl bg-amber-500/10 border border-amber-400/20">formule finte</div>
+        </div>
+
+        <!-- Diameter/Pitch -->
+        <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="rounded-2xl bg-slate-950/45 border border-slate-800 p-3">
+            <div class="text-[11px] text-slate-400" id="diamLabel">Diametro</div>
+            <div id="diamStandardWrap" class="mt-2">
+              <select id="diamStandard" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 outline-none focus:ring-2 focus:ring-cyan-400/30"></select>
+            </div>
+            <div id="diamFreeWrap" class="mt-2 hidden">
+              <input id="diamFree" type="number" step="0.001" min="0" placeholder="es. 10"
+                class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 outline-none focus:ring-2 focus:ring-cyan-400/30" />
+              <div class="mt-1 text-[11px] text-slate-400" id="diamUnit">mm</div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl bg-slate-950/45 border border-slate-800 p-3">
+            <div class="text-[11px] text-slate-400" id="pitchLabel">Passo</div>
+            <div id="pitchStandardWrap" class="mt-2">
+              <select id="pitchStandard" class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 outline-none focus:ring-2 focus:ring-cyan-400/30"></select>
+            </div>
+            <div id="pitchFreeWrap" class="mt-2 hidden">
+              <input id="pitchFree" type="number" step="0.001" min="0" placeholder="es. 1.25"
+                class="w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 outline-none focus:ring-2 focus:ring-cyan-400/30" />
+              <div class="mt-1 text-[11px] text-slate-400" id="pitchUnit">mm</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NPT extra -->
+        <div id="nptExtra" class="mt-3 rounded-2xl bg-slate-950/45 border border-slate-800 p-3 hidden">
+          <div class="flex items-center justify-between gap-2">
+            <div class="text-[11px] text-slate-400">NPT extra</div>
+            <div class="text-[11px] text-slate-500">placeholder</div>
+          </div>
+          <div class="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label class="block">
+              <div class="text-[11px] text-slate-400">L (mm)</div>
+              <input id="nptLen" type="number" step="0.1" min="0" value="10"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-slate-950/60 border border-slate-800 text-slate-100 outline-none focus:ring-2 focus:ring-cyan-400/30" />
+            </label>
+            <label class="block">
+              <div class="text-[11px] text-slate-400">Taper</div>
+              <input id="nptTaper" type="text" value="1:16" disabled
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-slate-950/35 border border-slate-800 text-slate-500" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-4 flex gap-3">
+          <button id="calcBtn" class="flex-1 px-4 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-cyan-400 text-slate-950 font-semibold shadow-soft hover:brightness-110 active:brightness-95">
+            Calcola
+          </button>
+          <button id="resetBtn" class="px-4 py-3 rounded-2xl bg-slate-950/35 border border-slate-800 text-slate-200 hover:bg-slate-950/60">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- OUTPUTS -->
+      <div class="lg:col-span-2 rounded-3xl bg-slate-900/55 border border-slate-800 shadow-soft p-4 sm:p-5">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-semibold">Risultato</div>
+          <span id="outTag" class="text-[11px] px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-200">placeholder</span>
+        </div>
+
+        <div class="mt-3 rounded-2xl bg-slate-950/45 border border-slate-800 p-3">
+          <div class="flex items-end justify-between gap-3">
+            <div>
+              <div class="text-[11px] text-slate-400">Diametro lavorazione</div>
+              <div id="outNom" class="text-3xl font-semibold tracking-tight">—</div>
+            </div>
+            <div class="text-right">
+              <div id="outUnit" class="text-[11px] text-slate-400">unità</div>
+              <div class="text-[11px] text-slate-500" id="outMeta">—</div>
+            </div>
+          </div>
+          <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+            <div class="rounded-xl bg-slate-950/60 border border-slate-800 p-2">
+              <div class="text-[11px] text-slate-400">Min</div>
+              <div id="outMin" class="font-semibold">—</div>
+            </div>
+            <div class="rounded-xl bg-slate-950/60 border border-slate-800 p-2">
+              <div class="text-[11px] text-slate-400">Max</div>
+              <div id="outMax" class="font-semibold">—</div>
+            </div>
+          </div>
+
+          <div class="mt-3">
+            <input id="rangeSlider" type="range" min="0" max="100" value="50" class="w-full">
+            <div class="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+              <span>piccolo</span>
+              <span id="outChosen" class="text-slate-200 font-medium">—</span>
+              <span>grande</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 rounded-2xl bg-slate-950/45 border border-slate-800 p-3">
+          <div class="text-[11px] text-slate-400">Dettagli</div>
+          <div id="outDetails" class="mt-1 text-xs text-slate-200 leading-relaxed">Seleziona input e calcola.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const NORMS = {
+  ISO_METRIC: { label: "ISO (Metrico)", unit: "mm", pitchLabel: "Passo (P)", pitchUnit: "mm", hint: "mm • passo P", tapered: false },
+  GAS:       { label: "GAS (BSP)",      unit: "in", pitchLabel: "TPI (placeholder)", pitchUnit: "TPI", hint: "in • TPI (placeholder)", tapered: false },
+  UNC:       { label: "UNC",            unit: "in", pitchLabel: "TPI", pitchUnit: "TPI", hint: "in • TPI", tapered: false },
+  UNF:       { label: "UNF",            unit: "in", pitchLabel: "TPI", pitchUnit: "TPI", hint: "in • TPI", tapered: false },
+  NPT:       { label: "NPT (Conico)",   unit: "in", pitchLabel: "TPI", pitchUnit: "TPI", hint: "in • TPI • conico", tapered: true },
+};
+
+const STANDARD_TABLE = {
+  ISO_METRIC: [
+    { d: 6,  pitches: [1.0, 0.75] },
+    { d: 8,  pitches: [1.25, 1.0] },
+    { d: 10, pitches: [1.5, 1.25, 1.0] },
+    { d: 12, pitches: [1.75, 1.5, 1.25] },
+  ],
+  GAS: [
+    { d: 0.25, pitches: [19] },
+    { d: 0.5,  pitches: [14] },
+  ],
+  UNC: [
+    { d: 0.25,  pitches: [20] },
+    { d: 0.375, pitches: [16] },
+  ],
+  UNF: [
+    { d: 0.25,  pitches: [28] },
+    { d: 0.375, pitches: [24] },
+  ],
+  NPT: [
+    { d: 0.25, pitches: [18] },
+    { d: 0.5,  pitches: [14] },
+  ],
+};
+
+let state = { kind: "external", norm: "ISO_METRIC", mode: "STANDARD" };
+const $ = (id) => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const fmt = (x) => (Number.isFinite(x) ? (Math.round(x * 1000) / 1000).toString() : "—");
+
+function setKind(kind) {
+  state.kind = kind;
+  document.querySelectorAll(".kindBtn").forEach(btn => {
+    const active = btn.dataset.kind === kind;
+    btn.classList.toggle("bg-indigo-500/20", active);
+    btn.classList.toggle("border", active);
+    btn.classList.toggle("border-indigo-400/30", active);
+    btn.classList.toggle("text-slate-100", active);
+    btn.classList.toggle("text-slate-300", !active);
+  });
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  const std = mode === "STANDARD";
+
+  $("modeStandard").classList.toggle("bg-cyan-500/15", std);
+  $("modeStandard").classList.toggle("border", std);
+  $("modeStandard").classList.toggle("border-cyan-400/25", std);
+  $("modeStandard").classList.toggle("text-slate-100", std);
+  $("modeStandard").classList.toggle("text-slate-300", !std);
+
+  $("modeNonStandard").classList.toggle("bg-cyan-500/15", !std);
+  $("modeNonStandard").classList.toggle("border", !std);
+  $("modeNonStandard").classList.toggle("border-cyan-400/25", !std);
+  $("modeNonStandard").classList.toggle("text-slate-100", !std);
+  $("modeNonStandard").classList.toggle("text-slate-300", std);
+
+  $("modeBadge").textContent = std ? "Standard" : "Non standard";
+
+  $("diamStandardWrap").classList.toggle("hidden", !std);
+  $("pitchStandardWrap").classList.toggle("hidden", !std);
+  $("diamFreeWrap").classList.toggle("hidden", std);
+  $("pitchFreeWrap").classList.toggle("hidden", std);
+}
+
+function setNorm(norm) {
+  state.norm = norm;
+  const n = NORMS[norm];
+
+  $("normHint").textContent = n.hint;
+  $("outUnit").textContent = n.unit;
+  $("diamUnit").textContent = n.unit;
+  $("pitchUnit").textContent = n.pitchUnit;
+  $("pitchLabel").textContent = n.pitchLabel;
+
+  $("nptExtra").classList.toggle("hidden", !n.tapered);
+
+  const rows = STANDARD_TABLE[norm] ?? [];
+  const diamSelect = $("diamStandard");
+  diamSelect.innerHTML = "";
+  rows.forEach((r, idx) => {
+    const opt = document.createElement("option");
+    opt.value = r.d;
+    opt.textContent = n.unit === "mm" ? `D ${r.d} mm` : `D ${r.d}"`;
+    if (idx === 0) opt.selected = true;
+    diamSelect.appendChild(opt);
+  });
+
+  populatePitchForSelectedDiameter();
+}
+
+function populatePitchForSelectedDiameter() {
+  const norm = state.norm;
+  const n = NORMS[norm];
+  const d = parseFloat($("diamStandard").value);
+  const row = (STANDARD_TABLE[norm] ?? []).find(r => r.d === d);
+  const pitchSelect = $("pitchStandard");
+  pitchSelect.innerHTML = "";
+  (row?.pitches ?? []).forEach((p, idx) => {
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = n.unit === "mm" ? `P ${p} mm` : `${p} TPI`;
+    if (idx === 0) opt.selected = true;
+    pitchSelect.appendChild(opt);
+  });
+}
+
+function readInputs() {
+  const n = NORMS[state.norm];
+  let diameter, pitchOrTpi;
+
+  if (state.mode === "STANDARD") {
+    diameter = parseFloat($("diamStandard").value);
+    pitchOrTpi = parseFloat($("pitchStandard").value);
+  } else {
+    diameter = parseFloat($("diamFree").value);
+    pitchOrTpi = parseFloat($("pitchFree").value);
+  }
+
+  const extras = n.tapered ? { nptLen: parseFloat($("nptLen").value) } : {};
+  return { diameter, pitchOrTpi, extras };
+}
+
+// Placeholder rules (fake but consistent):
+// - ISO uses P in mm
+// - GAS/UNC/UNF/NPT use TPI -> pitch(in) = 1/TPI
+function computeWorkingDiameter({ kind, norm, diameter, pitchOrTpi, extras }) {
+  const n = NORMS[norm];
+
+  let pitch = pitchOrTpi;
+  if (n.pitchUnit === "TPI") {
+    const tpi = pitchOrTpi;
+    pitch = (tpi > 0) ? 1.0 / tpi : NaN;
+  }
+
+  const COEF = {
+    ISO_METRIC: { external: 0.62, internal: 0.48 },
+    GAS:        { external: 0.80, internal: 0.65 },
+    UNC:        { external: 0.75, internal: 0.60 },
+    UNF:        { external: 0.70, internal: 0.58 },
+    NPT:        { external: 0.78, internal: 0.66 },
+  };
+
+  const c = COEF[norm][kind];
+  let nominal = diameter - c * pitch;
+
+  if (norm === "NPT") {
+    const Lmm = extras?.nptLen ?? 10;
+    const Lin = Lmm / 25.4;
+    const taperPerIn = 1.0 / 16.0; // placeholder 1:16
+    nominal = nominal + (kind === "internal" ? 1 : -1) * (taperPerIn * Lin * 0.5);
+  }
+
+  const tol = Math.max(0.002, (kind === "internal" ? 0.06 : 0.045) * Math.abs(pitch));
+  const min = nominal - tol;
+  const max = nominal + tol;
+
+  const meta = (n.pitchUnit === "mm") ? `P=${pitchOrTpi} mm` : `${pitchOrTpi} TPI`;
+  const details = [
+    `${kind === "internal" ? "Madrevite" : "Vite"} • ${n.label}`,
+    `Input: D=${diameter} ${n.unit}, ${meta}`,
+    norm === "NPT" ? `NPT: L=${extras?.nptLen ?? "—"} mm, taper 1:16 (placeholder)` : null,
+    `Regola finta: Dwork = D - coef·pitch (coef=${c})`,
+    `Tol finta: ±${fmt(tol)} ${n.unit}`
+  ].filter(Boolean).join("<br/>");
+
+  return { unit: n.unit, nominal, min, max, details, tag: "placeholder", meta };
+}
+
+function setOutput(res) {
+  $("outNom").textContent = fmt(res.nominal);
+  $("outMin").textContent = fmt(res.min);
+  $("outMax").textContent = fmt(res.max);
+  $("outTag").textContent = res.tag ?? "";
+  $("outMeta").textContent = res.meta ?? "";
+  $("outDetails").innerHTML = res.details ?? "";
+
+  $("rangeSlider").value = 50;
+  const chosen = res.min + (res.max - res.min) * 0.5;
+  $("outChosen").textContent = fmt(chosen) + " " + res.unit;
+}
+
+function clearOutput() {
+  $("outNom").textContent = "—";
+  $("outMin").textContent = "—";
+  $("outMax").textContent = "—";
+  $("outChosen").textContent = "—";
+  $("outMeta").textContent = "—";
+  $("outDetails").textContent = "Seleziona input e calcola.";
+}
+
+function doCalc() {
+  const { diameter, pitchOrTpi, extras } = readInputs();
+  if (!(diameter > 0) || !(pitchOrTpi > 0)) {
+    $("outDetails").innerHTML = "<span class='text-amber-200'>Inserisci valori validi.</span>";
+    return;
+  }
+  const res = computeWorkingDiameter({ kind: state.kind, norm: state.norm, diameter, pitchOrTpi, extras });
+  setOutput(res);
+}
+
+function doReset() {
+  setKind("external");
+  setNorm("ISO_METRIC");
+  setMode("STANDARD");
+  $("diamFree").value = "";
+  $("pitchFree").value = "";
+  $("nptLen").value = 10;
+  clearOutput();
+}
+
+$("rangeSlider").addEventListener("input", (e) => {
+  const min = parseFloat($("outMin").textContent);
+  const max = parseFloat($("outMax").textContent);
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return;
+  const t = clamp(parseFloat(e.target.value) / 100.0, 0, 1);
+  const chosen = min + (max - min) * t;
+  $("outChosen").textContent = fmt(chosen) + " " + NORMS[state.norm].unit;
+});
+
+document.querySelectorAll(".kindBtn").forEach(btn => btn.addEventListener("click", () => setKind(btn.dataset.kind)));
+$("modeStandard").addEventListener("click", () => setMode("STANDARD"));
+$("modeNonStandard").addEventListener("click", () => setMode("NON_STANDARD"));
+$("normSelect").addEventListener("change", (e) => setNorm(e.target.value));
+$("diamStandard").addEventListener("change", populatePitchForSelectedDiameter);
+$("calcBtn").addEventListener("click", doCalc);
+$("resetBtn").addEventListener("click", doReset);
+
+setKind(state.kind);
+setNorm(state.norm);
+setMode(state.mode);
+clearOutput();
+</script>
+</body>
+</html>
